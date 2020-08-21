@@ -12,7 +12,7 @@ def searchData(searchTerm):
 	caOpenDataURL = "https://data.ca.gov/"
 	# Package search: this is what the default search is on both of the above sites.
 	pkgSearch = "api/3/action/package_search?q="
-
+	size = "&rows=100"
 	# print("Please input a search term: ")
 	# Need to replace spaces with '+'
 	# searchTerm = input()
@@ -20,18 +20,18 @@ def searchData(searchTerm):
 	# print(searchTerm)
 	# searchTerm = str(searchTerm)
 	# Make request from API
-	rCNRA = requests.get(cnraURL + pkgSearch + searchTerm)
-	rCAPortal = requests.get(caOpenDataURL + pkgSearch + searchTerm)
+	rCNRA = requests.get(cnraURL + pkgSearch + searchTerm +size)
+	rCAPortal = requests.get(caOpenDataURL + pkgSearch + searchTerm +size)
 
 	if(rCNRA.json()['result']['count'] + rCAPortal.json()['result']['count'] == 0):
 		print("No datasets found for: " + searchTerm)
 		print("Please try another search.")
 		return
 
-	maxCNRA = 10 # Want to print 10 or less results.
+	maxCNRA = 100 # Want to print 10 or less results.
 	if(rCNRA.json()['result']['count'] < maxCNRA):
 		maxCNRA = rCNRA.json()['result']['count']
-	maxCAData = 10 # Want to print 10 or less results.
+	maxCAData = 100 # Want to print 10 or less results.
 	if(rCAPortal.json()['result']['count'] < maxCAData):
 		maxCAData = rCAPortal.json()['result']['count']
 
@@ -62,7 +62,7 @@ def searchData(searchTerm):
 	CAPortaldf = pd.DataFrame(CAPortaldata, columns = ['title','name','notes','metadata_created']) 
 	# print(CAPortaldf.count())
 
-	return CNRAdf, CAPortaldf
+	return CNRAdf
 
 
 # print(rCNRA.json()['result']['results'][i]['title'])
