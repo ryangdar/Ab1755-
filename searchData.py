@@ -12,7 +12,7 @@ def searchData(searchTerm):
 	caOpenDataURL = "https://data.ca.gov/"
 	# Package search: this is what the default search is on both of the above sites.
 	pkgSearch = "api/3/action/package_search?q="
-	size = "&rows=100"
+	size = "&rows=20"
 	# print("Please input a search term: ")
 	# Need to replace spaces with '+'
 	# searchTerm = input()
@@ -28,10 +28,10 @@ def searchData(searchTerm):
 		print("Please try another search.")
 		return
 
-	maxCNRA = 100 # Want to print 10 or less results.
+	maxCNRA = 20 # Want to print 10 or less results.
 	if(rCNRA.json()['result']['count'] < maxCNRA):
 		maxCNRA = rCNRA.json()['result']['count']
-	maxCAData = 100 # Want to print 10 or less results.
+	maxCAData = 20 # Want to print 10 or less results.
 	if(rCAPortal.json()['result']['count'] < maxCAData):
 		maxCAData = rCAPortal.json()['result']['count']
 
