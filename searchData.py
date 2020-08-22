@@ -46,7 +46,7 @@ def searchData(searchTerm):
 		temp.append(rCNRA.json()['result']['results'][i]['notes'])
 		temp.append(rCNRA.json()['result']['results'][i]['metadata_created'])
 		CNRAdata.append(temp)
-	CNRAdf = pd.DataFrame(CNRAdata, columns = ['title','name','notes','metadata_created']) 
+	CNRAdf = pd.DataFrame(CNRAdata, columns = ['title','Link','Description','Time Created']) 
 	# print(CNRAdf.count())
 	# This prints results from data.ca.gov.
 	# Prints database's title, URL, description and date it was updated. This is
@@ -59,7 +59,7 @@ def searchData(searchTerm):
 		temp.append(rCAPortal.json()['result']['results'][i]['notes'])
 		temp.append(rCAPortal.json()['result']['results'][i]['metadata_created'])
 		CAPortaldata.append(temp)
-	CAPortaldf = pd.DataFrame(CAPortaldata, columns = ['title','name','notes','metadata_created']) 
+	CAPortaldf = pd.DataFrame(CAPortaldata, columns = ['title','Link','Description','Time Created']) 
 	# print(CAPortaldf.count())
 
 	return CNRAdf
