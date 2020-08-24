@@ -1,76 +1,67 @@
 # Use 'from searchData import searchData' in main()
 # Call by inputing a string
-def searchData(searchTerm):
+# Can change number of 'rows' returned and result offset 'start'
+def searchData(searchTerm,rows=1000,start=0):
 
-	import json
+	# import json
 	import requests
 	import pandas as pd
 	import numpy as np
+	import re
+
+	# import time
+	# begin = time.time()
+
+	# from ckanapi import RemoteCKAN
+	# RemoteCKAN('https://data.cnra.ca.gov/')
+	# test = demo.action.package_search(q = "spending water")
+	# ckan.logic.action.get.package_search() <-- Need to use this?
 
 	# Websites we search.
 	cnraURL = "https://data.cnra.ca.gov/"
 	caOpenDataURL = "https://data.ca.gov/"
 	# Package search: this is what the default search is on both of the above sites.
 	pkgSearch = "api/3/action/package_search?q="
-	size = "&rows=20"
-	# print("Please input a search term: ")
-	# Need to replace spaces with '+'
-	# searchTerm = input()
-	# searchTerm = searchTerm.replace(" ", "+")
-	# print(searchTerm)
-	# searchTerm = str(searchTerm)
+	searchTerm = searchTerm.replace(" ", "%20")
+	returnSize = "&rows=" + str(rows) + "&start=" + str(start)
+
 	# Make request from API
-	rCNRA = requests.get(cnraURL + pkgSearch + searchTerm +size)
-	rCAPortal = requests.get(caOpenDataURL + pkgSearch + searchTerm +size)
+	rCNRA = requests.get(cnraURL + pkgSearch + searchTerm + returnSize)
+	rCAPortal = requests.get(caOpenDataURL + pkgSearch + searchTerm+ returnSize)
+
+	if(rCNRA.status_code !=200 or rCAPortal.status_code !=200):
+		print("There was an error connecting to the sites.")
+		return
 
 	if(rCNRA.json()['result']['count'] + rCAPortal.json()['result']['count'] == 0):
 		print("No datasets found for: " + searchTerm)
 		print("Please try another search.")
 		return
 
-	maxCNRA = 20 # Want to print 10 or less results.
-	if(rCNRA.json()['result']['count'] < maxCNRA):
-		maxCNRA = rCNRA.json()['result']['count']
-	maxCAData = 20 # Want to print 10 or less results.
-	if(rCAPortal.json()['result']['count'] < maxCAData):
-		maxCAData = rCAPortal.json()['result']['count']
+	CNRAdf = pd.DataFrame.from_records(rCNRA.json()['result']['results'])
+	CNRAdf = CNRAdf.loc[:,['title','name','notes','metadata_created']]
+	CNRAdf['name'] = cnraURL + "dataset/" + CNRAdf['name']
 
-	# This prints results from data.cnra.ca.gov.
-	# Prints database's title, URL, description and date it was updated. This is
-	# what is displayed using search on the actual websites.
-	CNRAdata = []
-	for i in range(0, maxCNRA):
-		temp = []
-		temp.append(rCNRA.json()['result']['results'][i]['title'])
-		temp.append(cnraURL + "dataset/" + rCNRA.json()['result']['results'][i]['name'])
-		temp.append(rCNRA.json()['result']['results'][i]['notes'])
-		temp.append(rCNRA.json()['result']['results'][i]['metadata_created'])
-		CNRAdata.append(temp)
-	CNRAdf = pd.DataFrame(CNRAdata, columns = ['title','Link','Description','Time Created']) 
-	# print(CNRAdf.count())
-	# This prints results from data.ca.gov.
-	# Prints database's title, URL, description and date it was updated. This is
-	# what is displayed using search on the actual websites.
-	CAPortaldata = []
-	for i in range(0, maxCAData):
-		temp = []
-		temp.append(rCAPortal.json()['result']['results'][i]['title'])
-		temp.append(caOpenDataURL + "dataset/" + rCAPortal.json()['result']['results'][i]['name'])
-		temp.append(rCAPortal.json()['result']['results'][i]['notes'])
-		temp.append(rCAPortal.json()['result']['results'][i]['metadata_created'])
-		CAPortaldata.append(temp)
-	CAPortaldf = pd.DataFrame(CAPortaldata, columns = ['title','Link','Description','Time Created']) 
-	# print(CAPortaldf.count())
+	CAPortaldf = pd.DataFrame.from_records(rCAPortal.json()['result']['results'])
+	CAPortaldf = CAPortaldf.loc[:,['title','name','notes','metadata_created']]
+	CAPortaldf['name'] = caOpenDataURL + "dataset/" + CAPortaldf['name']
 
-	return CNRAdf
+	# Removing html tags from 'notes' column
+	# Credit: https://medium.com/@jorlugaqui/how-to-strip-html-tags-from-a-string-in-python-7cb81a2bbf44
+	clean = re.compile('<.*?>')
+	for i in range(len(CNRAdf['notes'])):
+	    CNRAdf['notes'][i] = re.sub(clean, '', CNRAdf['notes'][i])
+	for i in range(len(CAPortaldf['notes'])):
+	    CAPortaldf['notes'][i] = re.sub(clean, '', CAPortaldf['notes'][i])
 
+	# Combine and drop duplicates
+	combined = pd.concat([CNRAdf, CAPortaldf]).sort_index(kind='merge')
+	combined.drop_duplicates(['title'],inplace=True)
+	combined = combined.reset_index()
+	combined = combined.drop(['index'], axis='columns')
 
-# print(rCNRA.json()['result']['results'][i]['title'])
-# print(cnraURL + "dataset/" + rCNRA.json()['result']['results'][i]['name'])
-# print(rCNRA.json()['result']['results'][i]['notes'])
-# print(rCNRA.json()['result']['results'][i]['metadata_created']+"\n")
+	# end = time.time()
+	# print(str(end-begin))
+	# This code takes ~5.5s to run for 1000 results from each site
 
-# 	print(rCAPortal.json()['result']['results'][i]['title'])
-# 	print(caOpenDataURL + "dataset/" + rCAPortal.json()['result']['results'][i]['name'])
-# 	print(rCAPortal.json()['result']['results'][i]['notes'])
-# 	print(rCAPortal.json()['result']['results'][i]['metadata_created']+"\n")
+	return combined
