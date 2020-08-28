@@ -1,5 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
+<style>
+  input[type=text], select {
+    width: 20%;
+    position: relative;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+  #W3{
+  position: absolute;
+  /* width: 320px;
+  height: 100px;
+  top: 60px; */
+  right: 475px;
+}
+#divtest{
+    position: relative;
+}
+</style>
 
 <head>
   <title> California's Open Water and Ecological Data</title>
@@ -110,18 +132,17 @@
       <div class="heading">
         <div class="container">
           <div class="row">
-            <div class="col-lg-11">
-              <p style="text-align:center; font-size:20px;">Search</p>
-              <img src="../static/images/a.png" alt="W3Schools.com" style="width:30px;height:30px;" class="center">    
+            <div class="col-lg-11" id="divtest">
+              <p style="text-align:center; font-size:20px; padding-left:70px;">Search</p>
+              <img id="W3" src="../static/images/a.png" alt="W3Schools.com" style="width:30px;height:30px" class="center">    
             </div>
           </div>
           
         </div>
       </div>
       <!-- END page-heading -->
-
       <p>
-        <form action="/hello" method="post" style="text-align:center">
+        <form action="/hello" method="post" style="text-align:center;">
             <input type="text" name="first_name">  <br />
             <input type="submit" style="display: none" name= "form" value="Submit" />
         </form>

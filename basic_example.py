@@ -23,7 +23,7 @@ $(document).ready( function () {
 </script>
 <head>
     <meta charset = "UTF-8">
-    <title>DataFrame display test</title>
+    <title>California's Open Water and Ecological Data Results</title>
 </head>
 <body>
 {{table | safe}}
@@ -40,7 +40,6 @@ def index():
 @app.route('/hello', methods=['POST'])
 def hello():
     first_name = request.form['first_name']
-    last_name = request.form['last_name']
     output = searchData(first_name)
     return flask.render_template_string (html, table = output.to_html (header = 'true', classes =['ui celled table','hover'], table_id = 'my_id', render_links=True))
 
