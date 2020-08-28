@@ -50,13 +50,9 @@ def searchData(searchTerm,rows=1000,start=0):
 	# Credit: https://medium.com/@jorlugaqui/how-to-strip-html-tags-from-a-string-in-python-7cb81a2bbf44
 	clean = re.compile('<.*?>')
 	for i in range(len(CNRAdf['notes'])):
-		CNRAdf['notes'][i] = re.sub(clean, '', CNRAdf['notes'][i])
-		CNRAdf['notes'][i] = CNRAdf['notes'][i].replace("\n", " ")
-		CNRAdf['notes'][i] = CNRAdf['notes'][i].replace("\r", " ")
+	    CNRAdf['notes'][i] = re.sub(clean, '', CNRAdf['notes'][i])
 	for i in range(len(CAPortaldf['notes'])):
-		CAPortaldf['notes'][i] = re.sub(clean, '', CAPortaldf['notes'][i])
-		CAPortaldf['notes'][i] = CAPortaldf['notes'][i].replace("\n", " ")
-		CAPortaldf['notes'][i] = CAPortaldf['notes'][i].replace("\r", " ")
+	    CAPortaldf['notes'][i] = re.sub(clean, '', CAPortaldf['notes'][i])
 
 	# Combine and drop duplicates
 	combined = pd.concat([CNRAdf, CAPortaldf]).sort_index(kind='merge')
