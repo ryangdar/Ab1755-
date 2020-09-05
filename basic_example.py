@@ -4,6 +4,7 @@ import flask
 import pandas as pd
 from flask import Flask, render_template, request
 from searchData import searchData
+# from flask_app import app as application
 
 html = """
 <! DOCTYPE html>
@@ -44,5 +45,5 @@ def hello():
     return flask.render_template_string (html, table = output.to_html (header = 'true', classes =['ui celled table','hover'], table_id = 'my_id', render_links=True))
 
 if __name__ == '__main__':
-    app.run(host = '0.0.0.0', port = 3000)
+    app.run()
 
